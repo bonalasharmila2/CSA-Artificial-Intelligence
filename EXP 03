@@ -1,0 +1,52 @@
+from collections import deque
+
+def water_jug(x, y, target):
+    queue = deque([(0, 0, [])])
+    visited = set((0, 0))
+
+    while queue:
+        a, b, path = queue.popleft()
+        path = path + [(a, b)]
+
+        if a == target or b == target:
+            return path
+
+        # Fill jug x
+        if (x, b) not in visited:
+            queue.append((x, b, path))
+            visited.add((x, b))
+
+        # Fill jug y
+        if (a, y) not in visited:
+            queue.append((a, y, path))
+            visited.add((a, y))
+
+        # Empty jug x
+        if (0, b) not in visited:
+            queue.append((0, b, path))
+            visited.add((0, b))
+
+        # Empty jug y
+        if (a, 0) not in visited:
+            queue.append((a, 0, path))
+            visited.add((a, 0))
+
+        # Pour from x to y
+        pour_amount = min(a, y - b)
+        if pour_amount > 0 and (a - pour_amount, b + pour_amount) not in visited:
+            queue.append((a - pour_amount, b + pour_amount, path))
+            visited.add((a - pour_amount, b + pour_amount))
+
+        # Pour from y to x
+        pour_amount = min(b, x - a)
+        if pour_amount > 0 and (a + pour_amount, b - pour_amount) not in visited:
+            queue.append((a + pour_amount, b - pour_amount, path))
+            visited.add((a + pour_amount, b - pour_amount))
+
+x = 4
+y = 3
+target = 2
+path = water_jug(x, y, target)
+for i, state in enumerate(path):
+    print(f"Step {i}: Jug 1 = {state[0]}, Jug 2 = {state[1]}")
+print(f"Final state: {path[-1]}")
