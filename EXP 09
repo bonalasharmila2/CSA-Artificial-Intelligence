@@ -1,0 +1,21 @@
+import itertools
+
+def tsp(graph, start):
+    cities = [i for i in range(len(graph)) if i != start]
+    best = min(
+        ([start] + list(p) + [start], 
+         sum(graph[i][j] for i, j in zip([start]+list(p), list(p)+[start])))
+        for p in itertools.permutations(cities)
+    )
+    return best[1], best[0]
+
+graph = [
+    [0,10,15,20],
+    [10,0,35,25],
+    [15,35,0,30],
+    [20,25,30,0]
+]
+
+cost, route = tsp(graph, 0)
+print("Minimum cost:", cost)
+print("Best route:", route)
