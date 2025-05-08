@@ -1,0 +1,84 @@
+import math
+from collections import Counter
+
+# Sample dataset: [Outlook, Temperature, Humidity, Wind, PlayTennis]
+data = [
+    ['Sunny', 'Hot', 'High', 'Weak', 'No'],
+    ['Sunny', 'Hot', 'High', 'Strong', 'No'],
+    ['Overcast', 'Hot', 'High', 'Weak', 'Yes'],
+    ['Rain', 'Mild', 'High', 'Weak', 'Yes'],
+    ['Rain', 'Cool', 'Normal', 'Weak', 'Yes'],
+    ['Rain', 'Cool', 'Normal', 'Strong', 'No'],
+    ['Overcast', 'Cool', 'Normal', 'Strong', 'Yes'],
+    ['Sunny', 'Mild', 'High', 'Weak', 'No'],
+    ['Sunny', 'Cool', 'Normal', 'Weak', 'Yes'],
+    ['Rain', 'Mild', 'Normal', 'Weak', 'Yes'],
+    ['Sunny', 'Mild', 'Normal', 'Strong', 'Yes'],
+    ['Overcast', 'Mild', 'High', 'Strong', 'Yes'],
+    ['Overcast', 'Hot', 'Normal', 'Weak', 'Yes'],
+    ['Rain', 'Mild', 'High', 'Strong', 'No']
+]
+
+features = ['Outlook', 'Temperature', 'Humidity', 'Wind']
+
+# Calculate entropy
+def entropy(data):
+    labels = [row[-1] for row in data]
+    total = len(labels)
+    counts = Counter(labels)
+    return -sum((count / total) * math.log2(count / total) for count in counts.values())
+
+# Split data by feature index and value
+def split_data(data, feature_index, value):
+    return [row for row in data if row[feature_index] == value]
+
+# Choose the best feature to split on
+def best_feature(data):
+    base_entropy = entropy(data)
+    best_gain = 0
+    best_index = -1
+    for i in range(len(data[0]) - 1):
+        values = set(row[i] for row in data)
+        feature_entropy = 0
+        for value in values:
+            subset = split_data(data, i, value)
+            feature_entropy += (len(subset) / len(data)) * entropy(subset)
+        info_gain = base_entropy - feature_entropy
+        if info_gain > best_gain:
+            best_gain = info_gain
+            best_index = i
+    return best_index
+
+# Recursively build the tree
+def build_tree(data, feature_names):
+    labels = [row[-1] for row in data]
+    if labels.count(labels[0]) == len(labels):
+        return labels[0]
+    if not data[0] or not feature_names:
+        return Counter(labels).most_common(1)[0][0]
+
+    best = best_feature(data)
+    best_name = feature_names[best]
+    tree = {best_name: {}}
+    values = set(row[best] for row in data)
+    for value in values:
+        subset = split_data(data, best, value)
+        new_features = feature_names[:best] + feature_names[best+1:]
+        reduced_data = [row[:best] + row[best+1:] for row in subset]
+        tree[best_name][value] = build_tree(reduced_data, new_features)
+    return tree
+
+# Function to print the tree in readable format
+def print_tree(tree, indent=""):
+    if isinstance(tree, dict):
+        for key, branches in tree.items():
+            for value, subtree in branches.items():
+                print(f"{indent}{key} = {value}:")
+                print_tree(subtree, indent + "  ")
+    else:
+        print(f"{indent}→ {tree}")
+
+# Build and display the decision tree
+decision_tree = build_tree(data, features)
+print("Decision Tree:")
+print_tree(decision_tree)
