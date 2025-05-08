@@ -1,0 +1,43 @@
+import heapq, math
+
+def a_star(grid, src, dest):
+    R, C = len(grid), len(grid[0])
+    def valid(r,c): return 0<=r<R and 0<=c<C and grid[r][c]
+    def h(r,c): return math.hypot(r-dest[0], c-dest[1])
+    open_set, came_from = [(h(*src), 0, src)], {}
+    g_score, visited = {tuple(src):0}, set()
+    while open_set:
+        _, g, (r,c) = heapq.heappop(open_set)
+        if (r,c)==tuple(dest):
+            path = [(r,c)]
+            while (r,c) in came_from:
+                r,c = came_from[(r,c)]
+                path.append((r,c))
+            return path[::-1]
+        if (r,c) in visited: continue
+        visited.add((r,c))
+        for dr,dc in [(-1,0),(1,0),(0,-1),(0,1)]:
+            nr,nc = r+dr,c+dc
+            if valid(nr,nc):
+                ng = g+1
+                if ng < g_score.get((nr,nc), float('inf')):
+                    g_score[(nr,nc)] = ng
+                    heapq.heappush(open_set, (ng+h(nr,nc), ng, (nr,nc)))
+                    came_from[(nr,nc)] = (r,c)
+    return None
+
+grid = [
+    [1,0,1,1,1,1,0,1,1,1],
+    [1,1,1,0,1,1,1,0,1,1],
+    [1,1,1,0,1,1,0,1,0,1],
+    [0,0,1,0,1,0,0,0,0,1],
+    [1,1,1,0,1,1,1,0,1,0],
+    [1,0,1,1,1,1,0,1,0,0],
+    [1,0,0,0,0,1,0,0,0,1],
+    [1,0,1,1,1,1,0,1,1,1],
+    [1,1,1,0,0,0,1,0,0,1]
+]
+
+src, dest = [8,0], [0,0]
+path = a_star(grid, src, dest)
+print("Path found:" if path else "No path found", path)
