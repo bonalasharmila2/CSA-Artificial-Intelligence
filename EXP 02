@@ -1,0 +1,28 @@
+\def solve_queens(n):
+    def is_safe(board, row, col):
+        for i in range(row):
+            if board[i] == col or board[i] - i == col - row or board[i] + i == col + row:
+                return False
+        return True
+
+    def solve(board, row):
+        if row == n:
+            result.append(board[:])
+            return
+        for col in range(n):
+            if is_safe(board, row, col):
+                board[row] = col
+                solve(board, row + 1)
+
+    result = []
+    solve([-1] * n, 0)
+    return [["." * i + "Q" + "." * (n - i - 1) for i in sol] for sol in result]
+
+
+n = 8
+solutions = solve_queens(n)
+for i, solution in enumerate(solutions):
+    print(f"Solution {i + 1}:")
+    for row in solution:
+        print(row)
+    print()
