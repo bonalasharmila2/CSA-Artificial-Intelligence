@@ -1,0 +1,33 @@
+rooms = {'A': 'Dirty', 'B': 'Dirty'}
+location = 'B'
+step = 1
+
+def print_state(title):
+    print(f"{title}\nLocation: {location}\nRoom A: {rooms['A']}\nRoom B: {rooms['B']}\n")
+
+# Initial and environment state
+print_state("Initial State:")
+print_state("Initial Environment:")
+
+# Step 1: Clean current room
+if rooms[location] == 'Dirty':
+    print(f"Step {step}:\nRoom {location} is dirty. Cleaning...")
+    rooms[location] = 'Clean'
+    print_state("")
+    step += 1
+
+# Step 2: Move to other room
+print(f"Step {step}:\nRoom {location} is clean. Moving...")
+location = 'A' if location == 'B' else 'B'
+print_state("")
+step += 1
+
+# Step 3: Clean new room if dirty
+if rooms[location] == 'Dirty':
+    print(f"Step {step}:\nRoom {location} is dirty. Cleaning...")
+    rooms[location] = 'Clean'
+    print_state("")
+    step += 1
+
+print("All rooms are clean!\n")
+print_state("Goal State:")
