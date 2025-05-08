@@ -1,0 +1,22 @@
+from collections import deque
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+
+    while queue:
+        node = queue.popleft()
+        if node not in visited:
+            print(node, end=' ')
+            visited.add(node)
+            queue.extend(neigh for neigh in graph[node] if neigh not in visited)
+
+# Example graph with digits
+graph = {
+    1: [2, 3],
+    2: [4, 5],
+    3: [6],
+    4: [], 5: [], 6: []
+}
+
+bfs(graph, 1)
