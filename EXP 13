@@ -1,0 +1,30 @@
+import math
+
+# Minimax Algorithm (no pruning)
+def minimax(node, depth, maximizing_player):
+    if depth == 0 or isinstance(node, int):  # Base case: leaf node or max depth
+        return node
+
+    if maximizing_player:
+        best = -math.inf
+        for child in node:
+            val = minimax(child, depth - 1, False)
+            best = max(best, val)
+        return best
+    else:
+        best = math.inf
+        for child in node:
+            val = minimax(child, depth - 1, True)
+            best = min(best, val)
+        return best
+
+# Example game tree
+# Tree structure: levels alternate between max and min
+game_tree = [
+    [[3, 5, 6], [9, 1, 2]],   # First branch
+    [[0, 7, -1], [4, 8, 10]]  # Second branch
+]
+
+# Run the minimax algorithm
+best_value = minimax(game_tree, depth=3, maximizing_player=True)
+print("Best value using Minimax:", best_value)
