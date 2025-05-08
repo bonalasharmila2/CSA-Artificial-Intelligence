@@ -1,0 +1,32 @@
+def print_board(b):
+    print("\n".join([" | ".join(row) for row in b]))
+    print()
+
+def check_winner(b, p):
+    return any(all(cell == p for cell in line) for line in (
+        b, zip(*b), [[b[i][i] for i in range(3)]], [[b[i][2-i] for i in range(3)]]
+    ) for line in line)
+
+def play():
+    b = [[str(3*r + c + 1) for c in range(3)] for r in range(3)]
+    p = "X"
+    for _ in range(9):
+        print_board(b)
+        move = input(f"Player {p}, enter 1-9: ")
+        if move not in [str(i) for i in range(1, 10)]:
+            print("Invalid move.")
+            continue
+        r, c = divmod(int(move) - 1, 3)
+        if b[r][c] in "XO":
+            print("Taken. Try again.")
+            continue
+        b[r][c] = p
+        if check_winner(b, p):
+            print_board(b)
+            print(f"Player {p} wins!")
+            return
+        p = "O" if p == "X" else "X"
+    print_board(b)
+    print("It's a draw!")
+
+play()
