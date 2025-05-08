@@ -1,0 +1,29 @@
+from collections import deque
+
+def bfs():
+    moves = [(1,0), (2,0), (0,1), (0,2), (1,1)]
+    queue = deque([((3,3,1), [])])
+    visited = set()
+
+    while queue:
+        (m, c, b), path = queue.popleft()
+        if (m, c, b) in visited or m < 0 or c < 0 or m > 3 or c > 3:
+            continue
+        if (m > 0 and m < c) or (3-m > 0 and 3-m < 3-c):
+            continue
+        visited.add((m, c, b))
+        path = path + [(m, c, b)]
+
+        if m == 0 and c == 0 and b == 0:
+            for s in path:
+                print(f"Left -> M:{s[0]} C:{s[1]} | Boat: {'left' if s[2] else 'right'}")
+            return
+
+        for dm, dc in moves:
+            nb = 0 if b else 1
+            nm, nc = (m - dm, c - dc) if b else (m + dm, c + dc)
+            queue.append(((nm, nc, nb), path))
+
+if _name_ == "_main_":
+    print("Missionaries and Cannibals Solution Path:\n")
+    bfs()
